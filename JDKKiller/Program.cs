@@ -5,8 +5,8 @@ namespace JDKKiller
 {
     internal static class Program
     {
-        private static string? JDKPath = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Clickteam\\Fusion Developer 2.5\\General", "JDKDir", null)?.ToString();
-        private static Process[]? JDKProcesses;
+        private static string? JDKPath = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Clickteam\\Fusion Developer 2.5\\General", "JDKDir", null)?.ToString()+"\\bin\\java.exe";
+        private static List<Process>? JDKProcesses;
 
         /// <summary>
         ///  The main entry point for the application.
@@ -15,7 +15,6 @@ namespace JDKKiller
         static void Main()
         {
             string interval = File.ReadAllText(AppContext.BaseDirectory + "\\.timerinterval");
-
             System.Timers.Timer timer = new System.Timers.Timer();
             timer.Interval = Int32.Parse(interval);
             timer.Elapsed += timer_Elapsed;
@@ -30,27 +29,47 @@ namespace JDKKiller
         {
             Console.WriteLine($"[{DateTime.Now}] Timer tick");
             Console.WriteLine($"[{DateTime.Now}] Is CTF process running: {ProcessIsRunning("mmf2u")}");
-            Console.WriteLine($"[{DateTime.Now}] Is JDK process running: {ProcessIsRunning(GetFilenameFromFilePath(JDKPath + "\\java.exe"))}");
+            Console.WriteLine($"[{DateTime.Now}] Is JDK process running: {ProcessIsRunningFilename(JDKPath)}");
 
-            if (ProcessIsRunning(GetFilenameFromFilePath(JDKPath + "\\java.exe"))) JDKProcesses = Process.GetProcessesByName(GetFilenameFromFilePath(JDKPath + "\\java.exe"));
-
-            if (!ProcessIsRunning("mmf2u") && ProcessIsRunning(GetFilenameFromFilePath(JDKPath + "\\java.exe")))
+            if (ProcessIsRunningFilename(JDKPath)) JDKProcesses = GetProcessByFilename(JDKPath);
+                 
+            if (!ProcessIsRunning("mmf2u") && ProcessIsRunningFilename(JDKPath))
             {
                 JDKProcesses?[0].Kill();
                 Console.WriteLine("JDK process killed");
             }
         }
 
-        private static string GetFilenameFromFilePath(string FullPath)
-        {
-            string? FilePath = Path.GetDirectoryName(FullPath);
-            return Path.GetFileNameWithoutExtension(FullPath).ToLower();
-        }
-
         private static bool ProcessIsRunning(string ProcessName)
         {
             Process[] processes = Process.GetProcessesByName(ProcessName);
             if (processes.Count() == 0) return false; else return true;
+        }
+
+        private static List<Process> GetProcessByFilename(string filename)
+        {
+            List<Process> processes = new List<Process>();
+
+            foreach (var process in Process.GetProcessesByName("java"))
+            {
+                if (process.MainModule?.FileName == filename)
+                {
+                    processes.Add(process);
+                }
+            }
+            return processes;
+        }
+
+        private static bool ProcessIsRunningFilename(string filename)
+        {
+            foreach (var process in Process.GetProcessesByName("java"))
+            {
+                if (process.MainModule?.FileName == filename)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
     }
