@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34928.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JDKKiller", "JDKKiller\JDKKiller.csproj", "{D81A5C36-76C4-47F9-8DF3-6AFE47DEE816}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D81A5C36-76C4-47F9-8DF3-6AFE47DEE816}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D81A5C36-76C4-47F9-8DF3-6AFE47DEE816}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D81A5C36-76C4-47F9-8DF3-6AFE47DEE816}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D81A5C36-76C4-47F9-8DF3-6AFE47DEE816}.Debug|x64.Build.0 = Debug|Any CPU
+		{D81A5C36-76C4-47F9-8DF3-6AFE47DEE816}.Debug|x86.ActiveCfg = Debug|x86
+		{D81A5C36-76C4-47F9-8DF3-6AFE47DEE816}.Debug|x86.Build.0 = Debug|x86
+		{D81A5C36-76C4-47F9-8DF3-6AFE47DEE816}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D81A5C36-76C4-47F9-8DF3-6AFE47DEE816}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D81A5C36-76C4-47F9-8DF3-6AFE47DEE816}.Release|x64.ActiveCfg = Release|x64
+		{D81A5C36-76C4-47F9-8DF3-6AFE47DEE816}.Release|x64.Build.0 = Release|x64
+		{D81A5C36-76C4-47F9-8DF3-6AFE47DEE816}.Release|x86.ActiveCfg = Release|x86
+		{D81A5C36-76C4-47F9-8DF3-6AFE47DEE816}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2DD674EB-0B96-4DB1-BEDC-FD3D4AB9C706}
+	EndGlobalSection
+EndGlobal
