@@ -4,7 +4,7 @@ namespace JDKKiller
 {
     public class ResourceLoader
     {
-        public static Icon GetResource(string name)
+        public static Icon GetIcon(string name)
         {
             var assembly = Assembly.GetExecutingAssembly();
             string resourceName = assembly.GetManifestResourceNames().Single(str => str.EndsWith(name));

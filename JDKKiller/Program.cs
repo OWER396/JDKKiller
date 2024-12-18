@@ -1,12 +1,15 @@
 using Microsoft.Win32;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace JDKKiller
 {
     internal static class Program
     {
-        private static string? JDKPath = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Clickteam\\Fusion Developer 2.5\\General", "JDKDir", null)?.ToString()+"\\bin\\java.exe";
+        private static readonly string? JDKPath = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Clickteam\\Fusion Developer 2.5\\General", "JDKDir", null)?.ToString()+"\\bin\\java.exe";
+        private static readonly string ConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\JDKKiller\\config.json";
         private static List<Process>? JDKProcesses;
+        private static Config config;
 
         /// <summary>
         ///  The main entry point for the application.
@@ -14,9 +17,28 @@ namespace JDKKiller
         [STAThread]
         static void Main()
         {
-            string interval = File.ReadAllText(AppContext.BaseDirectory + "\\.timerinterval");
+            if(!Directory.Exists(Path.GetDirectoryName(ConfigPath))) Directory.CreateDirectory(Path.GetDirectoryName(ConfigPath));
+
+            if(!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)+"\\JDKKiller\\config.json"))
+            {
+                config = new Config() { firstLaunch = true, timerInterval = 5000 };
+                SaveConfig();
+            }
+            else LoadConfig();
+
+            if (config.firstLaunch)
+            {
+                DialogResult dialogResult = MessageBox.Show("Would you like to have JDKKiller start every time your computer starts?", "JDKKiller", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if(dialogResult == DialogResult.Yes)
+                {
+                    RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+                    rk.SetValue("JDKKiller", '"'+Process.GetCurrentProcess().MainModule.FileName+'"');
+                }
+                config.firstLaunch = false;
+                SaveConfig();
+            }
             System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Interval = Int32.Parse(interval);
+            timer.Interval = config.timerInterval;
             timer.Elapsed += timer_Elapsed;
             timer.Start();
       
@@ -27,10 +49,6 @@ namespace JDKKiller
 
         private static void timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            Console.WriteLine($"[{DateTime.Now}] Timer tick");
-            Console.WriteLine($"[{DateTime.Now}] Is CTF process running: {ProcessIsRunning("mmf2u")}");
-            Console.WriteLine($"[{DateTime.Now}] Is JDK process running: {ProcessIsRunningFilename(JDKPath)}");
-
             if (ProcessIsRunningFilename(JDKPath)) JDKProcesses = GetProcessByFilename(JDKPath);
                  
             if (!ProcessIsRunning("mmf2u") && ProcessIsRunningFilename(JDKPath))
@@ -72,9 +90,19 @@ namespace JDKKiller
             return false;
         }
 
+        private static void LoadConfig()
+        {
+            config = JsonSerializer.Deserialize<Config>(File.ReadAllText(ConfigPath));
+        }
+
+        private static void SaveConfig()
+        {
+            File.WriteAllText(ConfigPath, JsonSerializer.Serialize(config));
+        }
+
     }
 
-    public class AppTray : ApplicationContext
+    class AppTray : ApplicationContext
     {
         private NotifyIcon trayIcon;
         
@@ -83,7 +111,7 @@ namespace JDKKiller
             trayIcon = new NotifyIcon()
             {
                 Text = "JDKKiller",
-                Icon = ResourceLoader.GetResource("Icon3.ico"),
+                Icon = ResourceLoader.GetIcon("Icon3.ico"),
                 ContextMenuStrip = new ContextMenuStrip()
                 {
                     Items = {new ToolStripMenuItem("Exit", null, Exit)}
@@ -97,5 +125,11 @@ namespace JDKKiller
             trayIcon.Visible = false;
             Application.Exit();
         }
+    }
+
+    class Config
+    {
+        public bool firstLaunch { get; set; }
+        public int timerInterval { get; set; }
     }
 }
